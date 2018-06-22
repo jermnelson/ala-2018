@@ -22,11 +22,11 @@
     Metadata &amp; Systems Librarian, <a href="https://www.coloradocollege.edu">Colorado College</a><br>
     Co-Founder/CTO, <a href="http://knowledgelinks.io">Knowledgelinks.io</a>
     </p>
-
     <div class="row">
         <section class="col">
-            <h2 style="color: #00A0B0">Plains2Peaks DP.LA Service Hub</h2>
-            <img src="img/rml-overview.svg" alt="RDF Mapping Language Overview">
+            <a href="https://plains2peaks.org/">
+                <img src="img/p2p-logo.png" alt="Plains2Peaks Logo">
+            </a>
         </section>
         <section class="col">
             <h3>Technology</h3>
@@ -48,18 +48,155 @@
             </ul>
         </section>
     </div>
+    <h2 style="color: #00A0B0">Plains2Peaks DP.LA Service Hub Technology</h2>
+    <object data="img/p2p-technology.svg" type="image/svg+xml" id="p2pImage">
+           Plains2Peaks Technology
+    </object>
+
+
     <footer>
         &copy; 2018 Jeremy Nelson, licensed under Creative Commons International Attribution License.
 
     </footer>
+
+<div class="modal" tabindex="-1" role="dialog" id="showESDialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Why Elasticsearch?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="lead">
+            <li>Performance Increase</li>
+            <li>Converted Mappings</li>
+            <li>Standard search mapping</li>
+            <li>Full text search</li>
+       </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" tabindex="-1" role="dialog" id="rdf2esDialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">RDF to ElasticSearch</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="lead">
+            <li>RDF Vocabulary Rules
+                <ul><li>i.e. domain & range</li></ul>
+            </li>
+            <li>RML processor execution</li>
+            <li>Standardized process</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="rmlMappingDialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">RML Mapping</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Handles both input and output using RDF Mapping Language</h3> 
+        <h4>Inputs</h4>
+        <ul class="lead">
+            <li>CSV</li>
+            <li>JSON</li>
+            <li>XML</li>
+            <li>SPARQL</li>
+            <li>Relational Databases</li>
+        </ul>
+        <h4>Outputs</ht>
+        <ul class="lead">
+            <li>DP.LA 
+                <a href="https://pro.dp.la/hubs/metadata-application-profile">Metadata Application Profile</a>
+            </li>
+            <li><a href="http://schema.org/">Schema.org</a> JSON-LD</a></li>
+        </ul>
+       </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    
     <script>
         const welcome = name => `Welcome ${name}`;
         console.log(welcome("visitor"));
+
+        window.onload=function() {
+            var p2pObj = document.getElementById("p2pImage");
+            var svgdoc;
+            
+            try {
+                svgdoc = p2pObj.contentDocument;
+            } catch(e) {
+                try {
+                    svgdoc = p2pObj.getSVGDocument();
+
+
+                } catch(e) {
+                    console.log("SVG in object not supported");
+                }
+
+            }
+            if (!svgdoc) return;
+
+            svgdoc.getElementById('textRDFtoES').onclick = showRDF2ES; 
+            svgdoc.getElementById('textRMLMapping').onclick = showRMLMapping;
+            svgdoc.getElementById('groupES').onclick = showESInfo;
+            svgdoc.getElementById('bibcatPublisher').onclick = localBIBCATPublisher;
+
+        }
+
+        function showESInfo () {
+            $("#showESDialog").modal('show');
+
+        }
+
+        function showRDF2ES () {
+            $('#rdf2esDialog').modal('show');
+        }
+
+        function showRMLMapping () {
+            $("#rmlMappingDialog").modal('show');
+        }
+
+        function localBIBCATPublisher () {
+            alert("In Local BIBCAT Publisher");
+            window.open("http://localhost:5000", "_blank").focus();
+        }
 
     </script>
   </body>
