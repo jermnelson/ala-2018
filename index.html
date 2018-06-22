@@ -55,9 +55,46 @@
 
 
     <footer>
-        &copy; 2018 Jeremy Nelson, licensed under Creative Commons International Attribution License.
+        &copy; 2018 Jeremy Nelson &amp; Mike Stabile, licensed under Creative Commons 
+        <a href="https://creativecommons.org/licenses/by/3.0/">Attribution 3.0</a> License.
 
     </footer>
+
+<div class="modal" tabindex="-1" role="dialog" id="histCOtoBFDialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">RML Mapping: CSV to BIBFRAME 2.0 Baseline</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <h2>History Colorado Argus System</h2>
+            <p>Provided two spreadsheets one matching the published 
+            digital object and the second with the metadata.</p>
+            <p>RDF Mapping Language (RML) was used to build a custom 
+            mapping file link columns in each of the row to a BIBFRAME
+            Entity's property.</p>
+            <h3 class="modal-title">Input CSV</h3>
+            <h4 class="modal-title">Metadata CSV File Column Headings and Sample Data Row</h4>
+
+            <pre><code>
+Object ID,Object Name.Term,Description,Title,Non-Original Title,Count,Inscription,Maker.Term,Dates.Date Range,Dimension,Subject.Term,Used.Term,Locale.Term,Period.Term,Culture.Term,Publisher.Term,Style/Tradition.Term,Credit Line,Collection Name,Collection Type.Code Description,Collection.Code Description,Copyright.Copy Right Category Type.Code Description,DPLA Rights,Copyright.Rights Granted
+O.274.1,Miniature bowl,"Tag reads, ""253"" or ""258.""",,,1,,,PREHISTORIC,"DIA: 1.25 in, H: .5 in",,Ancestral Puebloan,,,"Ancestral Puebloan, Ancestral Puebloan",,,,A. F. Wilmarth Collection,,Artifacts,,No Copyright-United States,
+            </code></pre>
+            <h4 class="modal-title">Object ID to BF Item IRI and BF Instance CoverArt Rows</h4>
+            <pre><code>
+Object ID,Portal Link,Image Link
+O.274.1,http://5008.sydneyplus.com/HistoryColorado_ArgusNet_Final/Portal/Portal.aspx?component=BasicSearchResults&record=6043316D-4024-4082-A45E-45025F5BA2F4,http://5008.sydneyplus.com/HistoryColorado_ArgusNet_Final/ViewImage.aspx?template=Image&field=DerivedIma&hash=59A1F980DBD54666E6255BEC6BCE51B2
+O           </code></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="modal" tabindex="-1" role="dialog" id="showESDialog">
   <div class="modal-dialog" role="document">
@@ -109,6 +146,91 @@
   </div>
 </div>
 
+<div class="modal" tabindex="-1" role="dialog" id="rmlBFtoMAPDialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">BIBFRAME 2.0 RDF to MAPv4 JSON-RDF</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title">
+            <a href="https://github.com/KnowledgeLinks/bibcat/blob/development/bibcat/maps/bf-to-map4.ttl">bf-to-map4.ttl</a> 
+            BF to MAPv4 JSON RDF</h2>
+        <pre><code>
+    rr:predicateObjectMap [
+        rr:predicate dcterm:title ;
+        rr:datatype rdf:List ;
+        rr:objectMap [
+            rml:query """SELECT DISTINCT ?title
+                      WHERE {{ ?instance_iri rdf:type bf:Instance .
+                               FILTER (sameTerm(?instance_iri, &lt;{instance_iri}&gt;))
+                               OPTIONAL {{ ?instance_iri rdfs:label ?title }}
+                               OPTIONAL {{ ?instance_iri bf:title ?bnode .
+                                           ?bnode rdf:type bf:Title .
+                                           ?bnode bf:mainTitle ?title }}
+
+                       }}""" ;
+            rml:reference """$.bf_itemOf.rdfs_label,
+                             $.bf_itemOf.rdf_value,
+                             $.bf_itemOf.bf_title.bf_mainTitle
+                             |stripend=,. /|distinct|limit=1"""
+        ]
+    ] .
+        </code></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal" tabindex="-1" role="dialog" id="rmlCSVtoBFDialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">CSV to Baseline BIBFRAME 2.0 RDF</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title"><code>history-colo-csv.ttl</code> BF Instance Title Rule</h2>
+        <pre><code>
+&lt;#HISTCOCSV_BIBFRAME_InstanceTitle&gt; a rr:TriplesMap ;
+
+    rml:logicalsource [
+        rml:source "history-colorado.csv" ;
+        rml:referenceformulation ql:csv 
+    ] ;
+
+    rr:subjectMap [
+        rr:termType rr:BlankNode ;
+        rr:class bf:Title 
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate bf:mainTitle ;
+        rr:objectMap [
+            rr:reference "Non-Original Title"; 
+            rr:datatype xsd:string 
+        ]
+    ] .
+        </code></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <div class="modal" tabindex="-1" role="dialog" id="rmlMappingDialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -122,7 +244,7 @@
         <h3>Handles both input and output using RDF Mapping Language</h3> 
         <h4>Inputs</h4>
         <ul class="lead">
-            <li>CSV</li>
+            <li><a href="#rmlCSVtoBF" data-toggle="modal">CSV</a></li>
             <li>JSON</li>
             <li>XML</li>
             <li>SPARQL</li>
@@ -144,7 +266,89 @@
   </div>
 </div>
 
-    
+ <div class="modal" tabindex="-1" role="dialog" id="rmlMODStoBFDialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">MODS XML to Baseline BIBFRAME 2.0 RDF Example</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title">
+            <a href="https://github.com/KnowledgeLinks/bibcat/blob/development/bibcat/maps/mods-to-bf.ttl">mods-to-bf.ttl</a> 
+                BF Instance Title Rule
+        </h2>
+        <pre><code>
+&lt;#MODS2BIBFRAME_InstanceTitle&gt; a rr:TriplesMap ;
+
+    rml:logicalSource [
+        rml:source "{mods_record}" ;
+        rml:iterator "mods:titleInfo"
+    ] ;
+
+    rr:subjectMap [
+        rr:termType rr:BlankNode ;
+        rr:class bf:Title ;
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate bf:mainTitle ;
+        rr:objectMap [
+            rr:reference "mods:title" ;
+            rr:datatype xsd:string
+        ]
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate bf:subTitle ;
+        rr:objectMap [
+            rr:reference "mods:subtitle" ;
+            rr:datatype xsd:string
+        ]
+    ] .
+        </code></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+ <div class="modal" tabindex="-1" role="dialog" id="stateCOtoBFDialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">MODS XML Input Example</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title">
+              MODS titleInfo XML Element 
+        </h2>
+        <pre><code>
+&lt;mods:mods xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;mods:titleInfo&gt;
+    &lt;mods:title&gt;Statewide coordinated state of need (SCSN)&lt;/mods:title&gt;
+  &lt;/mods:titleInfo&gt;
+.
+.
+.
+&lt;/mods:mods&gt;
+        </code></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+   
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -173,15 +377,44 @@
             }
             if (!svgdoc) return;
 
+            svgdoc.getElementById('bibcatPublisher').onclick = localBIBCATPublisher;
+            svgdoc.getElementById('csvButton').onclick = histCOtoBF2;
+            svgdoc.getElementById('groupES').onclick = showESInfo;
+            svgdoc.getElementById('rmlBFtoMAPv4').onclick = showBFtoMAP4;
+            svgdoc.getElementById('rmlCSVtoBF').onclick = showCSVtoBF;
+            svgdoc.getElementById('rmlMODStoBF').onclick = showMODStoBF;
             svgdoc.getElementById('textRDFtoES').onclick = showRDF2ES; 
             svgdoc.getElementById('textRMLMapping').onclick = showRMLMapping;
-            svgdoc.getElementById('groupES').onclick = showESInfo;
-            svgdoc.getElementById('bibcatPublisher').onclick = localBIBCATPublisher;
+            svgdoc.getElementById('xmlButton').onclick = stateCOtoBF2;
+        
+        }
+
+        function histCOtoBF2 () {
+            $("#histCOtoBFDialog").modal('show');
 
         }
 
+        function localBIBCATPublisher () {
+            window.open("http://localhost:5000", "_blank").focus();
+        }
+
+
         function showESInfo () {
             $("#showESDialog").modal('show');
+
+        }
+
+        function showBFtoMAP4 () {
+            $("#rmlBFtoMAPDialog").modal('show');
+
+        }
+
+        function showCSVtoBF () {
+            $("#rmlCSVtoBFDialog").modal('show');
+        }
+
+        function showMODStoBF () {
+            $("#rmlMODStoBFDialog").modal('show');
 
         }
 
@@ -193,9 +426,9 @@
             $("#rmlMappingDialog").modal('show');
         }
 
-        function localBIBCATPublisher () {
-            alert("In Local BIBCAT Publisher");
-            window.open("http://localhost:5000", "_blank").focus();
+        function stateCOtoBF2 () {
+            $("#stateCOtoBFDialog").modal('show');
+
         }
 
     </script>
